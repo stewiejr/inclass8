@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
+// MyApp and MainScreen are the same as the previous step.
+// Only FirstAnimationPage changes.
+
 void main() {
   runApp(const MyApp());
 }
@@ -112,9 +115,27 @@ class FirstAnimationPage extends StatefulWidget {
   State<FirstAnimationPage> createState() => _FirstAnimationPageState();
 }
 
-class _FirstAnimationPageState extends State<FirstAnimationPage> {
+class _FirstAnimationPageState extends State<FirstAnimationPage>
+    with SingleTickerProviderStateMixin { // Add mixin for AnimationController
   bool _isVisible = true;
   bool _showFrame = false;
+
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 5),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   void _toggleVisibility() {
     setState(() {
@@ -141,20 +162,23 @@ class _FirstAnimationPageState extends State<FirstAnimationPage> {
         ),
         Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                border: _showFrame
-                    ? Border.all(color: Colors.blueAccent, width: 5)
-                    : null,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10.0),
-                child: Image.network(
-                  'https://picsum.photos/250?image=9',
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.cover,
+            RotationTransition(
+              turns: _controller,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: _showFrame
+                      ? Border.all(color: Colors.blueAccent, width: 5)
+                      : null,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: Image.network(
+                    'https://picsum.photos/250?image=9',
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
